@@ -2,6 +2,9 @@ package com.wbl.taskmanager.models;
 
 import android.graphics.drawable.Drawable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by djtao on 2016/8/19.
  */
@@ -17,17 +20,21 @@ public class ProcessInfo {
     //进程名
     private String processName;
     //所占内存大小
-    private int memSize;
+    private String memSize;
+
     //应用图标信息
-    private Drawable icon;
+    private List<AppInfo> appInfoList=new ArrayList<>();
 
-    public Drawable getIcon() {
-        return icon;
+    private String time;
+    public List<AppInfo> getAppInfoList() {
+        return appInfoList;
     }
 
-    public void setIcon(Drawable icon) {
-        this.icon = icon;
+    public void setAppInfoList(List<AppInfo> appInfoList) {
+        this.appInfoList = appInfoList;
     }
+
+
     public int getPid() {
         return pid;
     }
@@ -36,11 +43,11 @@ public class ProcessInfo {
         this.pid = pid;
     }
 
-    public float getMemSize() {
-        return (float)(memSize*1.0/1024);
+    public String getMemSize() {
+        return memSize;
     }
 
-    public void setMemSize(int memSize) {
+    public void setMemSize(String memSize) {
         this.memSize = memSize;
     }
 
