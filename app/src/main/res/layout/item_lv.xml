@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_16"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/lv_process_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher"
+        />
+    <TextView
+        android:id="@+id/lv_process_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/lv_process_img"/>
+    <TextView
+        android:layout_below="@id/lv_process_name"
+        android:id="@+id/lv_process_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/lv_process_img"/>
+
+    <TextView
+
+        android:id="@+id/lv_process_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        />
+    <TextView
+        android:layout_below="@id/lv_process_size"
+        android:layout_alignParentRight="true"
+        android:id="@+id/lv_process_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
