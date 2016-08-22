@@ -13,19 +13,29 @@ import android.os.Message;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.daimajia.swipe.util.Attributes;
 import com.wbl.taskmanager.R;
-import com.wbl.taskmanager.adapter.ProcessAdapter;
+import com.wbl.taskmanager.adapter.GridView2Adapter;
+import com.wbl.taskmanager.adapter.GridViewAdapter;
 import com.wbl.taskmanager.base.BaseActivity;
 import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
+import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
+import com.wbl.taskmanager.utils.SystemUtil;
 
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  * 显示进程数量和进程详情
@@ -39,21 +49,32 @@ public class ProcessActivity extends BaseActivity {
     private List<ProcessInfo> processInfos=new ArrayList<>();
     private List<AppInfo> appInfos=new ArrayList<>();
     private List<ServiceInfo> serviceInfos=new ArrayList<>();
-    private ListView lv;
-
+    private GridView gv; //进程列表
+    private GridView gv2;//服务列表
+    private GridViewAdapter adapter;//进程适配器
+    private GridView2Adapter adapter2;//服务适配器
     //所有进程数
     private TextView tvTotal;
-    private ProcessAdapter mProcessAdapter;
-    private MyAysTask myAysTask;
+    private TextView tvTotalMem;//系统总内存
+    private TextView tvAvaibleMem;//系统可用内存
+
+
+    //实时显示可用内存信息
+    private Timer mTimer;
+    private CalculateProcessMemorySize myAysTask;
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg){
             super.handleMessage(msg);
             switch (msg.what){
                 case 1://读取内存大小信息完成
-                    mProcessAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                     break;
-                case 0:
+                case 0://监测系统内存变化
+                    YoYo.with(Techniques.Tada).duration(500).playOn(tvAvaibleMem);
+                    YoYo.with(Techniques.Tada).duration(500).playOn(tvTotalMem);
+                    tvAvaibleMem.setText(SystemUtil.getSystemAvaiableMemorySize(ProcessActivity.this));
+                    tvTotalMem.setText(SystemUtil.getSystemAllMemorySize(ProcessActivity.this));
                     break;
             }
         }
@@ -64,7 +85,8 @@ public class ProcessActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_process);
-        lv=(ListView)findViewById(R.id.process_lv);
+        gv=(GridView)findViewById(R.id.process_gv);
+        gv2=(GridView)findViewById(R.id.process_gv_service);
         tvTotal=(TextView)findViewById(R.id.process_total);
         // 获得ActivityManager服务的对象
         mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -80,23 +102,47 @@ public class ProcessActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-        myAysTask=new MyAysTask();
-        myAysTask.execute();
-
-
-
-        mProcessAdapter =new ProcessAdapter(this);
-        mProcessAdapter.setList(processInfos);
-        lv.setAdapter(mProcessAdapter);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        myAysTask=new CalculateProcessMemorySize(this);
+        myAysTask.execute(processInfos);
+        myAysTask.setAsynTaskFinishedListener(new CalculateProcessMemorySize.AsynTaskFinishedListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+            public void refreshUI() {
+                mHandler.sendEmptyMessage(1);
             }
         });
 
+
+        adapter=new GridViewAdapter(this,processInfos);
+        adapter.setMode(Attributes.Mode.Multiple);
+        gv.setAdapter(adapter);
+        adapter2=new GridView2Adapter(this,serviceInfos);
+        adapter2.setMode(Attributes.Mode.Multiple);
+        gv2.setAdapter(adapter2);
         tvTotal.setText("当前系统进程共有"+processInfos.size());
     }
+
+    @Override
+    protected void onStart() {
+        mTimer=new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mHandler.sendEmptyMessage(0);
+            }
+        },0,5000);
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+        if(mTimer!=null)
+            mTimer.cancel();
+        super.onStop();
+
+    }
+
+
     //获得系统进程信息
     private void getRunningAppProcessInfo() throws PackageManager.NameNotFoundException{
         //通过调用ActivityManager的getRunningAppProcesses()方法获得系统里所有正在运行的进程
@@ -153,38 +199,6 @@ public class ProcessActivity extends BaseActivity {
     }
 
 
-    class MyAysTask extends AsyncTask<Void,Integer,Boolean>{
 
-        public MyAysTask() {
-            super();
-        }
-
-        //执行耗时的操作
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            for(int i=0;i<processInfos.size();i++){
-
-                Debug.MemoryInfo[] memoryInfo=mActivityManager.getProcessMemoryInfo(new int[]{processInfos.get(i).getPid()});
-                int totalPrivateDirty=(memoryInfo[0].getTotalPss())*1024;
-                processInfos.get(i).setMemSize(Formatter.formatFileSize(ProcessActivity.this,totalPrivateDirty));
-
-            }
-            return true;
-        }
-
-        //进度条更新
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
-        //执行完毕
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            if(aBoolean){
-                mHandler.sendEmptyMessage(1);
-            }
-        }
-    }
 
 }

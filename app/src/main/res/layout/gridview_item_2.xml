@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </LinearLayout>
+    <LinearLayout
+        android:padding="@dimen/padding_8"
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_width="200dp"
+        android:layout_height="200dp">
+        <TextView
+            android:id="@+id/item2_tv_pid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/item2_tv_service_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="4"
+            android:minLines="1"
+            />
+
+        <TextView
+            android:id="@+id/item2_tv_process_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="4"
+            android:minLines="1"/>
+        <TextView
+            android:id="@+id/item2_tv_timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</com.daimajia.swipe.SwipeLayout>

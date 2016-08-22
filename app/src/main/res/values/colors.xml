@@ -5,5 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="default_green">#00ff00</color>
 
-
+    <color name="backgroundColor">#E8E8E0</color>
+    <color name="backgroundColorPress">#DBDBD3</color>
 </resources>

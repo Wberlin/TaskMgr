@@ -25,7 +25,16 @@ public class ProcessInfo {
     //应用图标信息
     private List<AppInfo> appInfoList=new ArrayList<>();
 
+
+
     private String time;
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
     public List<AppInfo> getAppInfoList() {
         return appInfoList;
     }

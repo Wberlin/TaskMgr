@@ -16,6 +16,7 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.wbl.taskmanager.R;
 import com.wbl.taskmanager.base.BaseActivity;
+import com.wbl.taskmanager.utils.SystemUtil;
 import com.wbl.taskmanager.utils.TextColorUtil;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,8 +26,6 @@ public class MainActivity extends BaseActivity {
     private ActivityManager mActivityManager=null;
     //当前可用内存
     private TextView tvAvaible;
-
-
     //总内存
     private TextView tvAll;
     //显示进程信息
@@ -41,8 +40,8 @@ public class MainActivity extends BaseActivity {
                 case 0:
                     YoYo.with(Techniques.Tada).duration(500).playOn(tvAvaible);
                     YoYo.with(Techniques.Tada).duration(500).playOn(tvAll);
-                    tvAvaible.setText(getSystemAvaiableMemorySize());
-                    tvAll.setText(getSystemAllMemorySize());
+                    tvAvaible.setText(SystemUtil.getSystemAvaiableMemorySize(MainActivity.this));
+                    tvAll.setText(SystemUtil.getSystemAllMemorySize(MainActivity.this));
                     break;
 
             }
@@ -76,19 +75,23 @@ public class MainActivity extends BaseActivity {
         tvAvaible.setText("系统可用内存为：");
 
         //拿到系统可用内容信息
-        String availMemStr=getSystemAvaiableMemorySize();
+        String availMemStr= SystemUtil.getSystemAvaiableMemorySize(this);
         tvAvaible.setText(availMemStr);
 
         tvAll.setText("系统总内容为：");
         //拿到系统总内存信息
-        String allMemStr=getSystemAllMemorySize();
+        String allMemStr=SystemUtil.getSystemAllMemorySize(this);
         tvAll.setText(allMemStr);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 YoYo.with(Techniques.RubberBand).duration(500).playOn(view);
-                openActivity(ProcessActivity.class);
+                //android系统小于5.0
+                if(Build.VERSION.SDK_INT<=19)
+                    openActivity(ProcessActivity.class);
+                else
+                    openActivity(ProcessUpActivity.class);
             }
         });
     }
@@ -113,35 +116,7 @@ public class MainActivity extends BaseActivity {
         btn=(Button)findViewById(R.id.main_btn);
     }
 
-    //获取系统总内存信息
-    private String getSystemAllMemorySize(){
-        ActivityManager.MemoryInfo memoryInfo=new ActivityManager.MemoryInfo();
-        mActivityManager.getMemoryInfo(memoryInfo);
-        long memSize=0;
-        if(Build.VERSION.SDK_INT>16)
-            memSize=memoryInfo.totalMem;
-        else{
-            //默认为2GB
-            memSize=1024000000*2;
-        }
-        return formateFileSize(memSize);
-    }
 
-    //获取系统可用内存信息
-    private String getSystemAvaiableMemorySize(){
-        ActivityManager.MemoryInfo memoryInfo=new ActivityManager.MemoryInfo();
-        mActivityManager.getMemoryInfo(memoryInfo);
-        //系统可用内存
-        long memSize=memoryInfo.availMem;
-
-        return formateFileSize(memSize);
-
-    }
-
-    //调用系统函数，字符串转换 long -String KB/MB
-    private String formateFileSize(long size){
-        return Formatter.formatFileSize(MainActivity.this, size);
-    }
 
     private class FixedRefresh extends TimerTask{
 
