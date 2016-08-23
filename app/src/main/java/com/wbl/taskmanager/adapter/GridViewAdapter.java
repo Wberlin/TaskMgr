@@ -11,6 +11,8 @@ import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.wbl.taskmanager.R;
 import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ProcessInfo;
+import com.wbl.taskmanager.models.ServiceInfo;
+import com.wbl.taskmanager.view.TimerView;
 
 import java.util.List;
 
@@ -41,9 +43,8 @@ public class GridViewAdapter extends BaseSwipeAdapter {
         TextView tvPid=(TextView)convertView.findViewById(R.id.item_tv_pid);
         TextView tvMemSize=(TextView)convertView.findViewById(R.id.item_tv_memsize);
         TextView tvProName=(TextView)convertView.findViewById(R.id.item_tv_pro_name);
-
-
-
+        TextView tvTimer=(TextView)convertView.findViewById(R.id.item_tv_timer);
+        TextView tvServiceCount=(TextView)convertView.findViewById(R.id.item_tv_service_count);
 
 
         List<AppInfo> appInfoList=processInfoList.get(position).getAppInfoList();
@@ -51,13 +52,20 @@ public class GridViewAdapter extends BaseSwipeAdapter {
         if(processInfoList.get(position).getMemSize()==null)
             tvMemSize.setText("占用内存：正在计算中...");
         else
-        tvMemSize.setText("占用内存："+processInfoList.get(position).getMemSize());
+            tvMemSize.setText("占用内存："+processInfoList.get(position).getMemSize());
         tvProName.setText("进程名："+processInfoList.get(position).getProcessName());
         if(appInfoList!=null&&appInfoList.size()!=0){
             tvAppName.setText(appInfoList.get(0).getAppLabel());
             ivAppIcon.setImageDrawable(appInfoList.get(0).getAppIcon());
-
         }
+        if(processInfoList.get(position).getServiceInfoList().size()==0){
+            tvServiceCount.setText("获取服务中...");
+        }else{
+            tvServiceCount.setText(processInfoList.get(position).getServiceInfoList().size()+"个服务");
+            //tvTimer.setText();
+        }
+
+
 
     }
 

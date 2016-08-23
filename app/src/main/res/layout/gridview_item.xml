@@ -4,10 +4,11 @@
     android:id="@+id/swipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/padding_8">
         <TextView
             android:id="@+id/item_tv_pid"
             android:layout_width="match_parent"
@@ -17,22 +18,33 @@
         <TextView
             android:id="@+id/item_tv_memsize"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_tv_pid"/>
         <TextView
             android:id="@+id/item_tv_pro_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_tv_memsize"/>
+        <TextView
+            android:id="@+id/item_tv_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"/>
+        <TextView
+            android:id="@+id/item_tv_service_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_tv_pro_name"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:background="#ffffff"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:gravity="center"
-        android:padding="@dimen/padding_16">
+        android:padding="@dimen/padding_8">
         <TextView
             android:id="@+id/item_tv"
             android:layout_width="wrap_content"

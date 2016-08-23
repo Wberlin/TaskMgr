@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.wbl.taskmanager.R;
 import com.wbl.taskmanager.models.ServiceInfo;
+import com.wbl.taskmanager.view.TimerView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -30,17 +31,6 @@ public class GridView2Adapter extends BaseSwipeAdapter {
         this.mContext=context;
         this.serviceInfos=serviceInfos;
     }
-    private Handler mHandler=new Handler(){
-        @Override
-        public void handleMessage(Message msg){
-            switch (msg.what){
-                case 1:
-
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-    };
     @Override
     public int getSwipeLayoutResourceId(int position) {
         return R.id.swipe;
@@ -57,23 +47,17 @@ public class GridView2Adapter extends BaseSwipeAdapter {
         TextView tvPid=(TextView)convertView.findViewById(R.id.item2_tv_pid);
         TextView tvServiceName=(TextView)convertView.findViewById(R.id.item2_tv_service_name);
         TextView tvProcessName=(TextView)convertView.findViewById(R.id.item2_tv_process_name);
-        final TextView tvTimer=(TextView)convertView.findViewById(R.id.item2_tv_timer);
+        TextView tvTimer=(TextView)convertView.findViewById(R.id.item2_tv_timer);
+
+
 
         tvPid.setText("Pid:"+serviceInfos.get(position).getPid());
         tvServiceName.setText("服务名:"+serviceInfos.get(position).getServicename());
         tvProcessName.setText("进程名："+serviceInfos.get(position).getProcessname());
-        SimpleDateFormat df=new SimpleDateFormat("###.00", Locale.CHINA);
-        String Timer=df.format( SystemClock.uptimeMillis()-serviceInfos.get(position).getActivesince());
-        tvTimer.setText("运行时间："+Timer);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Message message=mHandler.obtainMessage();
 
-                mHandler.sendEmptyMessage(1);
-            }
-        },0,1000);
-       // tvTimer.setText("运行时间"+serviceInfos.get(position));
+        //tvTimer.setTimeData(serviceInfos.get(position).getActivesince());
+        //tvTimer.start();
+
     }
 
     @Override

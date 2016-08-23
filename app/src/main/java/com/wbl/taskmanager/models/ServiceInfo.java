@@ -16,10 +16,17 @@ public class ServiceInfo {
     private long activesince;//Service初次启动的时间
     private ComponentName servicemessage;//获得该Service的组件信息 包含了pkgname / servicename信息
     private long lastactivitytime;//Activity最近一次关联Service时间
+    private ProcessInfo processInfo;
 
 
 
+    public ProcessInfo getProcessInfo() {
+        return processInfo;
+    }
 
+    public void setProcessInfo(ProcessInfo processInfo) {
+        this.processInfo = processInfo;
+    }
 
 
     public long getLastactivitytime() {

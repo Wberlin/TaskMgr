@@ -27,7 +27,19 @@ public class ProcessInfo {
 
 
 
+    //服务信息
+    private List<ServiceInfo> serviceInfoList=new ArrayList<>();
+
+
     private String time;
+
+    public List<ServiceInfo> getServiceInfoList() {
+        return serviceInfoList;
+    }
+
+    public void setServiceInfoList(List<ServiceInfo> serviceInfoList) {
+        this.serviceInfoList = serviceInfoList;
+    }
     public String getTime() {
         return time;
     }

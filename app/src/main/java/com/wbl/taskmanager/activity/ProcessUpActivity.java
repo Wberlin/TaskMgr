@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
 import com.jaredrummler.android.processes.AndroidProcesses;
 import com.jaredrummler.android.processes.models.AndroidAppProcess;
@@ -27,6 +29,7 @@ import com.wbl.taskmanager.base.BaseActivity;
 import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
+import com.wbl.taskmanager.utils.AssociateProcessToService;
 import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
 import com.wbl.taskmanager.utils.SystemUtil;
 
@@ -59,14 +62,22 @@ public class ProcessUpActivity extends BaseActivity{
 
     private PackageManager pm;
     private ActivityManager am;
-    private CalculateProcessMemorySize myAysTask;
+    private CalculateProcessMemorySize myAysTask;//计算进程所占内存大小的异步类
+    private AssociateProcessToService aeAysTask;//关联进程与服务器
     //实时显示可用内存信息
     private Timer mTimer;
+
+    //可侧滑布局
+    private SwipeLayout mSwipeLayout;
+
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg){
             super.handleMessage(msg);
             switch (msg.what){
+                case 2://关联服务与程序信息完成
+                    adapter2.notifyDataSetChanged();
+                    break;
                 case 1://读取进程所占内存大小信息完成
                     adapter.notifyDataSetChanged();
                     break;
@@ -90,6 +101,9 @@ public class ProcessUpActivity extends BaseActivity{
         tvAvaibleMem=(TextView)findViewById(R.id.process_tv_avaible_size);
         gv=(GridView)findViewById(R.id.process_gv);
         gv2=(GridView)findViewById(R.id.process_gv_service);
+        mSwipeLayout=(SwipeLayout)findViewById(R.id.process_swipe);
+
+
 
         pm=getPackageManager();
         am=(ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -117,9 +131,52 @@ public class ProcessUpActivity extends BaseActivity{
                 mHandler.sendEmptyMessage(1);
             }
         });
+
+        aeAysTask=new AssociateProcessToService(processInfos,serviceInfos);
+        aeAysTask.execute();
+        aeAysTask.setAssociateFinishedListener(new AssociateProcessToService.AssociateFinishedListener() {
+            @Override
+            public void refreshUI() {
+                mHandler.sendEmptyMessage(2);
+            }
+        });
+
         tvTotal.setText("当前系统进程共有："+processInfos.size());
         tvAvaibleMem.setText(SystemUtil.getSystemAvaiableMemorySize(this));
         tvTotalMem.setText(SystemUtil.getSystemAllMemorySize(this));
+        mSwipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
+            @Override
+            public void onStartOpen(SwipeLayout layout) {
+                //Log.e("TAG","swipe->onStartOpen");
+            }
+
+            @Override
+            public void onOpen(SwipeLayout layout) {
+                //Log.e("TAG","swipe->onOpen");
+                tvTotal.setText("当前运行中的服务共有："+serviceInfos.size());
+            }
+
+            @Override
+            public void onStartClose(SwipeLayout layout) {
+                //Log.e("TAG","swipe->onStartClose");
+            }
+
+            @Override
+            public void onClose(SwipeLayout layout) {
+               // Log.e("TAG","swipe->onClose");
+                tvTotal.setText("当前运行中的系统进程共有："+processInfos.size());
+            }
+
+            @Override
+            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+                //Log.e("TAG","swipe->onUpdate");
+            }
+
+            @Override
+            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+                //Log.e("TAG","swipe->onHandRelease");
+            }
+        });
     }
 
     @Override
@@ -190,11 +247,6 @@ public class ProcessUpActivity extends BaseActivity{
                     appInfoList.add(appInfo);
                     proInfo.setAppInfoList(appInfoList);
                 }
-
-
-
-
-
                 processInfos.add(proInfo);
             }
         }
