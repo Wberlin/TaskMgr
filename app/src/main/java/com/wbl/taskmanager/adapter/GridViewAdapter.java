@@ -1,6 +1,8 @@
 package com.wbl.taskmanager.adapter;
 
 import android.content.Context;
+import android.os.SystemClock;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,15 +58,23 @@ public class GridViewAdapter extends BaseSwipeAdapter {
         tvProName.setText("进程名："+processInfoList.get(position).getProcessName());
         if(appInfoList!=null&&appInfoList.size()!=0){
             tvAppName.setText(appInfoList.get(0).getAppLabel());
-            ivAppIcon.setImageDrawable(appInfoList.get(0).getAppIcon());
+            ivAppIcon.setImageBitmap(appInfoList.get(0).getAppIcon());
         }
+        long activeSince=0;
+
         if(processInfoList.get(position).getServiceInfoList().size()==0){
             tvServiceCount.setText("获取服务中...");
         }else{
             tvServiceCount.setText(processInfoList.get(position).getServiceInfoList().size()+"个服务");
+            activeSince=processInfoList.get(position).getServiceInfoList().get(0).getActivesince();
             //tvTimer.setText();
         }
-
+        if(activeSince==0){
+            tvTimer.setText("重新启动中...");
+        }else{
+            String time= DateUtils.formatElapsedTime(new StringBuilder(128),(SystemClock.elapsedRealtime()-activeSince)/1000);
+            tvTimer.setText(time);
+        }
 
 
     }

@@ -39,7 +39,8 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:background="#ffffff"
+
+        android:background="@drawable/ripple_style"
         android:orientation="vertical"
         android:layout_width="200dp"
         android:layout_height="200dp"

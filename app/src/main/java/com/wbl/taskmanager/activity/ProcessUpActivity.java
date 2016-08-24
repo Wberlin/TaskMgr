@@ -4,12 +4,16 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -75,8 +79,11 @@ public class ProcessUpActivity extends BaseActivity{
         public void handleMessage(Message msg){
             super.handleMessage(msg);
             switch (msg.what){
+                case 3://每秒刷新一次
+                    adapter.notifyDataSetChanged();
+                    break;
                 case 2://关联服务与程序信息完成
-                    adapter2.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                     break;
                 case 1://读取进程所占内存大小信息完成
                     adapter.notifyDataSetChanged();
@@ -87,6 +94,7 @@ public class ProcessUpActivity extends BaseActivity{
                     tvAvaibleMem.setText(SystemUtil.getSystemAvaiableMemorySize(ProcessUpActivity.this));
                     tvTotalMem.setText(SystemUtil.getSystemAllMemorySize(ProcessUpActivity.this));
                     break;
+
             }
         }
     };
@@ -144,6 +152,31 @@ public class ProcessUpActivity extends BaseActivity{
         tvTotal.setText("当前系统进程共有："+processInfos.size());
         tvAvaibleMem.setText(SystemUtil.getSystemAvaiableMemorySize(this));
         tvTotalMem.setText(SystemUtil.getSystemAllMemorySize(this));
+
+
+        initListener();
+
+
+
+    }
+    //初始化监听器
+    private void initListener() {
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.e("TAG","GridView->ItemClick");
+            }
+        });
+        gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.e("TAG","GridView->ItemLongClick");
+
+                return false;
+            }
+        });
+
+
         mSwipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
             @Override
             public void onStartOpen(SwipeLayout layout) {
@@ -163,7 +196,7 @@ public class ProcessUpActivity extends BaseActivity{
 
             @Override
             public void onClose(SwipeLayout layout) {
-               // Log.e("TAG","swipe->onClose");
+                // Log.e("TAG","swipe->onClose");
                 tvTotal.setText("当前运行中的系统进程共有："+processInfos.size());
             }
 
@@ -177,6 +210,7 @@ public class ProcessUpActivity extends BaseActivity{
                 //Log.e("TAG","swipe->onHandRelease");
             }
         });
+
     }
 
     @Override
@@ -188,6 +222,13 @@ public class ProcessUpActivity extends BaseActivity{
                 mHandler.sendEmptyMessage(0);
             }
         },0,5000);
+
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mHandler.sendEmptyMessage(3);
+            }
+        },0,1000);
         super.onStart();
     }
 
@@ -240,7 +281,7 @@ public class ProcessUpActivity extends BaseActivity{
 
                     //获取应用图标
                     Drawable icon=packageInfo.applicationInfo.loadIcon(pm);
-                    appInfo.setAppIcon(icon);
+                    appInfo.setAppIcon(((BitmapDrawable)icon).getBitmap());
                     appInfo.setPkgName(packageInfo.packageName);
                     appInfo.setProcessInfo(proInfo);
                     appInfo.setTime(sf.format(stat.stime()));

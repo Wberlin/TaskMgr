@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ProcessActivity" />
-        <activity android:name=".activity.AppInfoActivity" />
+        <activity android:name=".activity.ProcessDetailActivity" />
         <activity android:name=".activity.ProcessUpActivity" />
     </application>
 
