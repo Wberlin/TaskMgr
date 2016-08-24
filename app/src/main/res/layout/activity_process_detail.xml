@@ -6,7 +6,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_8">
+        android:padding="@dimen/padding_16"
+        android:background="#ffffff">
         <ImageView
             android:layout_centerVertical="true"
             android:id="@+id/detail_icon"
@@ -23,6 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/detail_icon"
+            android:layout_below="@id/detail_title"
             />
         <TextView
             android:id="@+id/detail_process_size"
@@ -36,12 +38,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
             android:layout_below="@id/detail_process_size"
             />
     </RelativeLayout>
 
-
+    <TextView
+        android:paddingLeft="@dimen/padding_16"
+        android:paddingTop="@dimen/padding_8"
+        android:paddingBottom="@dimen/padding_8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="服务"/>
     <ListView
         android:id="@+id/detail_service"
         android:layout_width="match_parent"

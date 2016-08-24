@@ -3,6 +3,8 @@ package com.wbl.taskmanager.base;
 import android.app.Activity;
 import android.app.Application;
 
+import com.anthonycr.grant.PermissionsManager;
+
 import java.util.Stack;
 
 
@@ -16,8 +18,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-//       CrashHandler mCrashHandler = CrashHandler.getInstance();
-//       mCrashHandler.init(getApplicationContext());
+       CrashHandler mCrashHandler = CrashHandler.getInstance();
+       mCrashHandler.init(getApplicationContext());
        singleton=this;
 
 

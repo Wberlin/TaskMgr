@@ -47,7 +47,6 @@ public class AssociateProcessToService extends AsyncTask<Void,Integer,Boolean> {
                 ServiceInfo serviceInfo=services.get(j);
                 if(serviceInfo.getPid()==processInfo.getPid()){
                     serviceInfos.add(serviceInfo);
-                    serviceInfo.setProcessInfo(processInfo);
                 }
             }
             processInfo.setServiceInfoList(serviceInfos);

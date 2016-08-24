@@ -34,6 +34,7 @@ import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
 import com.wbl.taskmanager.utils.AssociateProcessToService;
+import com.wbl.taskmanager.utils.BitmapUtil;
 import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
 import com.wbl.taskmanager.utils.SystemUtil;
 
@@ -57,11 +58,9 @@ public class ProcessUpActivity extends BaseActivity{
     private TextView tvAvaibleMem;//系统可用内存
 
     private GridView gv; //进程列表
-    private GridView gv2;//服务列表
     private List<ProcessInfo> processInfos=new ArrayList<>();
     private List<ServiceInfo> serviceInfos=new ArrayList<>();
     private GridViewAdapter adapter;//进程适配器
-    private GridView2Adapter adapter2;//服务适配器
     private List<AndroidAppProcess> processes=null;
 
     private PackageManager pm;
@@ -108,8 +107,8 @@ public class ProcessUpActivity extends BaseActivity{
         tvTotalMem=(TextView)findViewById(R.id.process_tv_total_size);
         tvAvaibleMem=(TextView)findViewById(R.id.process_tv_avaible_size);
         gv=(GridView)findViewById(R.id.process_gv);
-        gv2=(GridView)findViewById(R.id.process_gv_service);
-        mSwipeLayout=(SwipeLayout)findViewById(R.id.process_swipe);
+        //gv2=(GridView)findViewById(R.id.process_gv_service);
+        //mSwipeLayout=(SwipeLayout)findViewById(R.id.process_swipe);
 
 
 
@@ -125,9 +124,9 @@ public class ProcessUpActivity extends BaseActivity{
         adapter.setMode(Attributes.Mode.Multiple);
         gv.setAdapter(adapter);
 
-        adapter2=new GridView2Adapter(this,serviceInfos);
-        adapter2.setMode(Attributes.Mode.Multiple);
-        gv2.setAdapter(adapter2);
+        //adapter2=new GridView2Adapter(this,serviceInfos);
+        //adapter2.setMode(Attributes.Mode.Multiple);
+        //gv2.setAdapter(adapter2);
 
 
 
@@ -165,6 +164,9 @@ public class ProcessUpActivity extends BaseActivity{
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.e("TAG","GridView->ItemClick");
+                Bundle bundle=new Bundle();
+                bundle.putInt("Pid",processInfos.get(i).getPid());
+                openActivity(ProcessDetailActivity.class,bundle);
             }
         });
         gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -177,39 +179,7 @@ public class ProcessUpActivity extends BaseActivity{
         });
 
 
-        mSwipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
-            @Override
-            public void onStartOpen(SwipeLayout layout) {
-                //Log.e("TAG","swipe->onStartOpen");
-            }
 
-            @Override
-            public void onOpen(SwipeLayout layout) {
-                //Log.e("TAG","swipe->onOpen");
-                tvTotal.setText("当前运行中的服务共有："+serviceInfos.size());
-            }
-
-            @Override
-            public void onStartClose(SwipeLayout layout) {
-                //Log.e("TAG","swipe->onStartClose");
-            }
-
-            @Override
-            public void onClose(SwipeLayout layout) {
-                // Log.e("TAG","swipe->onClose");
-                tvTotal.setText("当前运行中的系统进程共有："+processInfos.size());
-            }
-
-            @Override
-            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
-                //Log.e("TAG","swipe->onUpdate");
-            }
-
-            @Override
-            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
-                //Log.e("TAG","swipe->onHandRelease");
-            }
-        });
 
     }
 
@@ -257,6 +227,7 @@ public class ProcessUpActivity extends BaseActivity{
             for(AndroidAppProcess process:processes){
                 ProcessInfo proInfo=new ProcessInfo();
                 Stat stat=process.stat();
+
                 Statm statm=process.statm();
                 PackageInfo packageInfo=null;
 
@@ -281,9 +252,9 @@ public class ProcessUpActivity extends BaseActivity{
 
                     //获取应用图标
                     Drawable icon=packageInfo.applicationInfo.loadIcon(pm);
-                    appInfo.setAppIcon(((BitmapDrawable)icon).getBitmap());
+
+                    appInfo.setAppIcon(BitmapUtil.drawableToBitmap(icon));
                     appInfo.setPkgName(packageInfo.packageName);
-                    appInfo.setProcessInfo(proInfo);
                     appInfo.setTime(sf.format(stat.stime()));
                     appInfoList.add(appInfo);
                     proInfo.setAppInfoList(appInfoList);

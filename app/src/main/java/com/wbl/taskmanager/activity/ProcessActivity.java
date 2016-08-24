@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -29,6 +30,7 @@ import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
 import com.wbl.taskmanager.utils.AssociateProcessToService;
+import com.wbl.taskmanager.utils.BitmapUtil;
 import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
 import com.wbl.taskmanager.utils.SystemUtil;
 
@@ -95,7 +97,7 @@ public class ProcessActivity extends BaseActivity {
 
         setContentView(R.layout.activity_process);
         gv=(GridView)findViewById(R.id.process_gv);
-        gv2=(GridView)findViewById(R.id.process_gv_service);
+        //gv2=(GridView)findViewById(R.id.process_gv_service);
         tvTotal=(TextView)findViewById(R.id.process_total);
         tvAvaibleMem=(TextView)findViewById(R.id.process_tv_avaible_size);
         tvTotalMem=(TextView)findViewById(R.id.process_tv_total_size);
@@ -192,7 +194,6 @@ public class ProcessActivity extends BaseActivity {
             processInfo.setUid(appProcessInfo.uid);
             processInfo.setProcessName(appProcessInfo.processName);
 
-
             processInfos.add(processInfo);
             // 获得每个进程里运行的应用程序(包),即每个应用程序的包名
             String[] packageList = appProcessInfo.pkgList;
@@ -206,7 +207,7 @@ public class ProcessActivity extends BaseActivity {
                 String appName=packageInfo.applicationInfo.loadLabel(mPackageManager).toString();
                 appInfo.setAppLabel(appName);
                 appInfo.setPkgName(appProcessInfo.processName);
-                appInfo.setAppIcon(((BitmapDrawable)icon).getBitmap());
+                appInfo.setAppIcon(BitmapUtil.drawableToBitmap(icon));
 
 
                 //appInfo.setTime(df.format(SystemClock.elapsedRealtime()));

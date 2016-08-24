@@ -41,19 +41,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-    <com.daimajia.swipe.SwipeLayout
-        android:id="@+id/process_swipe"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/process_gv_service"
-            android:numColumns="2"
-            android:verticalSpacing="10dp"
-            android:horizontalSpacing="10dp"
-            android:listSelector="@drawable/item_selector"
-            />
+    <!--<com.daimajia.swipe.SwipeLayout-->
+        <!--android:id="@+id/process_swipe"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--<GridView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:id="@+id/process_gv_service"-->
+            <!--android:numColumns="2"-->
+            <!--android:verticalSpacing="10dp"-->
+            <!--android:horizontalSpacing="10dp"-->
+            <!--android:listSelector="@drawable/item_selector"-->
+            <!--/>-->
         <GridView
             android:orientation="vertical"
             android:id="@+id/process_gv"
@@ -63,6 +63,6 @@
             android:listSelector="@drawable/item_selector"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    </com.daimajia.swipe.SwipeLayout>
+    <!--</com.daimajia.swipe.SwipeLayout>-->
 
 </LinearLayout>

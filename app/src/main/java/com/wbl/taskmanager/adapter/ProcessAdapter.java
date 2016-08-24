@@ -46,7 +46,7 @@ public class ProcessAdapter extends BaseListViewAdapter<ProcessInfo> {
 
         vHolder.tvProDetail.setText(processInfo.getProcessName());
         if(processInfo.getAppInfoList().size()!=0)
-        vHolder.ivAppIcon.setImageDrawable(processInfo.getAppInfoList().get(0).getAppIcon());
+        vHolder.ivAppIcon.setImageBitmap(processInfo.getAppInfoList().get(0).getAppIcon());
 
         vHolder.tvTime.setText("Pid:"+processInfo.getPid());
         //vHolder.tvDetail.setText(appInfo.getTime());

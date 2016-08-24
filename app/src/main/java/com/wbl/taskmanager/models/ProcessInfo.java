@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by djtao on 2016/8/19.
  */
 
-public class ProcessInfo implements Parcelable{
+public class ProcessInfo{
 
 
     //进程id
@@ -89,63 +90,59 @@ public class ProcessInfo implements Parcelable{
         this.uid = uid;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeInt(pid);
+//        parcel.writeInt(uid);
+//        parcel.writeString(processName);
+//        parcel.writeString(memSize);
+//        parcel.writeString(time);
+//        parcel.writeTypedList(serviceInfoList);
+//        parcel.writeTypedList(appInfoList);
+//    }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(pid);
-        parcel.writeInt(uid);
-        parcel.writeString(processName);
-        parcel.writeString(memSize);
-        parcel.writeString(time);
-        parcel.writeParcelableArray((ServiceInfo[])serviceInfoList.toArray(),0);
-        parcel.writeParcelableArray((AppInfo[])appInfoList.toArray(),0);
-    }
-
-    public static final Parcelable.Creator<ProcessInfo> CREATOR= new ClassLoaderCreator<ProcessInfo>() {
-        @Override
-        public ProcessInfo createFromParcel(Parcel parcel) {
-            return new ProcessInfo(parcel);
-        }
-
-        @Override
-        public ProcessInfo[] newArray(int i) {
-            return new ProcessInfo[i];
-        }
-
-        @Override
-        public ProcessInfo createFromParcel(Parcel parcel, ClassLoader classLoader) {
-            return new ProcessInfo(parcel,classLoader);
-        }
-    };
+//    public static final Parcelable.Creator<ProcessInfo> CREATOR= new ClassLoaderCreator<ProcessInfo>() {
+//        @Override
+//        public ProcessInfo createFromParcel(Parcel parcel) {
+//            return new ProcessInfo(parcel);
+//        }
+//
+//        @Override
+//        public ProcessInfo[] newArray(int i) {
+//            return new ProcessInfo[i];
+//        }
+//
+//        @Override
+//        public ProcessInfo createFromParcel(Parcel parcel, ClassLoader classLoader) {
+//            return new ProcessInfo(parcel,classLoader);
+//        }
+//    };
     public ProcessInfo(){
 
     }
-    private ProcessInfo(Parcel in,ClassLoader classLoader){
-        pid=in.readInt();
-        uid=in.readInt();
-        processName=in.readString();
-        memSize=in.readString();
-        time=in.readString();
-        ServiceInfo[] serviceInfos=(ServiceInfo[]) in.readParcelableArray(classLoader);
-        Collections.addAll(serviceInfoList,serviceInfos);
-        AppInfo[] appInfos=(AppInfo[])in.readParcelableArray(classLoader);
-        Collections.addAll(appInfoList,appInfos);
-    }
+//    private ProcessInfo(Parcel in,ClassLoader classLoader){
+//        pid=in.readInt();
+//        uid=in.readInt();
+//        processName=in.readString();
+//        memSize=in.readString();
+//        time=in.readString();
+//        in.readTypedList(serviceInfoList,ServiceInfo.CREATOR);
+//        in.readTypedList(appInfoList,AppInfo.CREATOR);
+//    }
 
 
-    private ProcessInfo(Parcel in){
-        pid=in.readInt();
-        uid=in.readInt();
-        processName=in.readString();
-        memSize=in.readString();
-        time=in.readString();
-        ServiceInfo[] serviceInfos=(ServiceInfo[]) in.readParcelableArray(Thread.currentThread().getContextClassLoader());
-        Collections.addAll(serviceInfoList,serviceInfos);
-        AppInfo[] appInfos=(AppInfo[])in.readParcelableArray(Thread.currentThread().getContextClassLoader());
-        Collections.addAll(appInfoList,appInfos);
-    }
+//    private ProcessInfo(Parcel in){
+//        pid=in.readInt();
+//        uid=in.readInt();
+//        processName=in.readString();
+//        memSize=in.readString();
+//        time=in.readString();
+//        in.readTypedList(serviceInfoList,ServiceInfo.CREATOR);
+//        in.readTypedList(appInfoList,AppInfo.CREATOR);
+//    }
 }

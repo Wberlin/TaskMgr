@@ -13,8 +13,6 @@ import android.view.Window;
 public class BaseActivity extends FragmentActivity implements View.OnClickListener{
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
