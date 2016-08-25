@@ -13,8 +13,6 @@ import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.wbl.taskmanager.R;
 import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ProcessInfo;
-import com.wbl.taskmanager.models.ServiceInfo;
-import com.wbl.taskmanager.view.TimerView;
 
 import java.util.List;
 

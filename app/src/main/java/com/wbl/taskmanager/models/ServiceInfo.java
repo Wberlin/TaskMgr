@@ -1,6 +1,7 @@
 package com.wbl.taskmanager.models;
 
 import android.content.ComponentName;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -113,6 +114,15 @@ public class ServiceInfo{
     private long lastactivitytime;//Activity最近一次关联Service时间
 
 
+
+    private Drawable packageIcon;//service所属包的图标
+    public Drawable getPackageIcon() {
+        return packageIcon;
+    }
+
+    public void setPackageIcon(Drawable packageIcon) {
+        this.packageIcon = packageIcon;
+    }
     public ServiceInfo(){
 
     }

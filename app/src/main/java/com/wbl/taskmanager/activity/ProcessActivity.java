@@ -33,6 +33,7 @@ import com.wbl.taskmanager.utils.AssociateProcessToService;
 import com.wbl.taskmanager.utils.BitmapUtil;
 import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
 import com.wbl.taskmanager.utils.SystemUtil;
+import com.wbl.taskmanager.utils.aysntask.onFinishListener;
 
 import java.util.ArrayList;
 
@@ -118,17 +119,17 @@ public class ProcessActivity extends BaseActivity {
 
         myAysTask=new CalculateProcessMemorySize(this);
         myAysTask.execute(processInfos);
-        myAysTask.setAsynTaskFinishedListener(new CalculateProcessMemorySize.AsynTaskFinishedListener() {
+        myAysTask.setOnFinishedListener(new onFinishListener() {
             @Override
-            public void refreshUI() {
+            public void onFinish(boolean isfinish) {
                 mHandler.sendEmptyMessage(1);
             }
         });
         aeAysTask=new AssociateProcessToService(processInfos,serviceInfos);
         aeAysTask.execute();
-        aeAysTask.setAssociateFinishedListener(new AssociateProcessToService.AssociateFinishedListener() {
+        aeAysTask.setOnFinishedListener(new onFinishListener() {
             @Override
-            public void refreshUI() {
+            public void onFinish(boolean isfinish) {
                 mHandler.sendEmptyMessage(2);
             }
         });

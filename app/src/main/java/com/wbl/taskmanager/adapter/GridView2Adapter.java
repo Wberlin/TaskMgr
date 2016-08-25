@@ -1,9 +1,6 @@
 package com.wbl.taskmanager.adapter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +9,8 @@ import android.widget.TextView;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.wbl.taskmanager.R;
 import com.wbl.taskmanager.models.ServiceInfo;
-import com.wbl.taskmanager.view.TimerView;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by djtao on 2016/8/22.

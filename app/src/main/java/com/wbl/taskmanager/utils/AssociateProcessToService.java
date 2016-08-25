@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
+import com.wbl.taskmanager.utils.aysntask.onFinishListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,19 +18,9 @@ import java.util.Objects;
 public class AssociateProcessToService extends AsyncTask<Void,Integer,Boolean> {
     private List<ProcessInfo> processes;
     private List<ServiceInfo> services;
+    private onFinishListener listener;
 
-    public interface AssociateFinishedListener{
-        //刷新UI
-        void refreshUI();
-    }
-
-
-    private AssociateFinishedListener listener;
-    public AssociateFinishedListener getListener() {
-        return listener;
-    }
-
-    public void setAssociateFinishedListener(AssociateFinishedListener listener) {
+    public void setOnFinishedListener(onFinishListener listener) {
         this.listener = listener;
     }
 
@@ -59,7 +50,7 @@ public class AssociateProcessToService extends AsyncTask<Void,Integer,Boolean> {
     protected void onPostExecute(Boolean aBoolean) {
         if(aBoolean){
             if(listener!=null){
-                listener.refreshUI();
+                listener.onFinish(aBoolean);
             }
             Log.e("TAG","关联完成");
         }

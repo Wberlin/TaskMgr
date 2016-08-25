@@ -11,15 +11,16 @@
         <ImageView
             android:layout_centerVertical="true"
             android:id="@+id/detail_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
         <TextView
-
+            android:layout_marginLeft="@dimen/margin_4"
             android:id="@+id/detail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/detail_icon"/>
         <TextView
+            android:layout_marginLeft="@dimen/margin_4"
             android:id="@+id/detail_service_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,6 +44,7 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/detail_service_tag"
         android:paddingLeft="@dimen/padding_16"
         android:paddingTop="@dimen/padding_8"
         android:paddingBottom="@dimen/padding_8"
@@ -50,8 +52,28 @@
         android:layout_height="wrap_content"
         android:text="服务"/>
     <ListView
-        android:id="@+id/detail_service"
+        android:id="@+id/detail_service_lv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:dividerHeight="0dp"
+        android:divider="@null">
+    </ListView>
+    <TextView
+        android:id="@+id/detail_process_tag"
+        android:paddingLeft="@dimen/padding_16"
+        android:paddingTop="@dimen/padding_8"
+        android:paddingBottom="@dimen/padding_8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="程序"/>
+    <ListView
+        android:id="@+id/detail_process_lv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:scrollbars="none"
+        >
+
     </ListView>
 </LinearLayout>

@@ -11,20 +11,26 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jaredrummler.android.processes.AndroidProcesses;
 import com.jaredrummler.android.processes.models.AndroidAppProcess;
 import com.jaredrummler.android.processes.models.Stat;
 import com.jaredrummler.android.processes.models.Statm;
+import com.jaredrummler.android.processes.models.Status;
 import com.wbl.taskmanager.R;
+import com.wbl.taskmanager.adapter.ServiceAdapter;
 import com.wbl.taskmanager.base.BaseActivity;
 import com.wbl.taskmanager.models.AppInfo;
 import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
 import com.wbl.taskmanager.utils.BitmapUtil;
 import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
+import com.wbl.taskmanager.utils.aysntask.onFinishListener;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -41,6 +47,7 @@ public class ProcessDetailActivity extends BaseActivity {
     private TextView tvServiceCount;
     private TextView tvMemSize;
     private TextView tvTimer;
+    private TextView tvServiceTag;
     private ProcessInfo proInfo;
     private Intent intent;
     private int pid;
@@ -48,14 +55,18 @@ public class ProcessDetailActivity extends BaseActivity {
     private Timer timer;
 
     private CalculateProcessMemorySize myAsynTask;
+
+    private ServiceAdapter mAdapter;
+    private ListView lv;
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch (msg.what){
-                case 1://更新进程运行时间
+                case 1://更新进程与服务运行时间
                     if(serviceInfos.size()!=0){
                         tvTimer.setText(DateUtils.formatElapsedTime(new StringBuilder(128),(SystemClock.elapsedRealtime()-
                                 serviceInfos.get(0).getActivesince())/1000));
+                        mAdapter.notifyDataSetChanged();
                     }
                     break;
                 case 0://计算进程占用内存大小
@@ -69,6 +80,7 @@ public class ProcessDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_process_detail);
+        long startTime=SystemClock.currentThreadTimeMillis();
         try{
             intent=getIntent();
             Bundle bundle=intent.getExtras();
@@ -82,6 +94,8 @@ public class ProcessDetailActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        long endTime=SystemClock.currentThreadTimeMillis()-startTime;
+        Log.e("TAG","ProcessDetailActivity->endTime:"+endTime);
     }
 
     @Override
@@ -94,7 +108,6 @@ public class ProcessDetailActivity extends BaseActivity {
                     mHandler.sendEmptyMessage(1);
                 }
             },0,1000);
-
         }
         super.onStart();
     }
@@ -113,9 +126,9 @@ public class ProcessDetailActivity extends BaseActivity {
         List<ProcessInfo> processInfos=new ArrayList<>();
         processInfos.add(proInfo);
         myAsynTask.execute(processInfos);
-        myAsynTask.setAsynTaskFinishedListener(new CalculateProcessMemorySize.AsynTaskFinishedListener() {
+        myAsynTask.setOnFinishedListener(new onFinishListener() {
             @Override
-            public void refreshUI() {
+            public void onFinish(boolean isfinish) {
                 mHandler.sendEmptyMessage(0);
             }
         });
@@ -126,6 +139,17 @@ public class ProcessDetailActivity extends BaseActivity {
         tvServiceCount.setText("共有"+serviceInfos.size()+"个服务");
         tvMemSize.setText(proInfo.getMemSize());
 
+
+        if(serviceInfos.size()!=0){
+
+            mAdapter=new ServiceAdapter(this);
+            mAdapter.setList(serviceInfos);
+            lv.setAdapter(mAdapter);
+            tvServiceTag.setVisibility(View.VISIBLE);
+        }else{
+            tvServiceTag.setVisibility(View.GONE);
+        }
+
     }
 
     private void getRunningProcessInfo() throws IOException{
@@ -133,6 +157,7 @@ public class ProcessDetailActivity extends BaseActivity {
         List<ActivityManager.RunningServiceInfo> serviceInfoList=am.getRunningServices(200);
         for(ActivityManager.RunningServiceInfo sInfo:serviceInfoList){
             if(sInfo.pid==pid){
+
                 ServiceInfo serviceInfo=new ServiceInfo();
                 serviceInfo.setActivesince(sInfo.activeSince);
                 serviceInfo.setStart(sInfo.started);
@@ -141,6 +166,17 @@ public class ProcessDetailActivity extends BaseActivity {
                 serviceInfo.setServicemessage(sInfo.service);
                 serviceInfo.setServicename(sInfo.service.getClassName());
                 serviceInfo.setLastactivitytime(sInfo.lastActivityTime);
+
+                sInfo.service.getPackageName();
+                try {
+                    PackageManager pm=getPackageManager();
+                    PackageInfo packageInfo=pm.getPackageInfo(sInfo.service.getPackageName(),0);
+                    serviceInfo.setPackageIcon(packageInfo.applicationInfo.loadIcon(pm));
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+
                 serviceInfos.add(serviceInfo);
             }
 
@@ -150,6 +186,7 @@ public class ProcessDetailActivity extends BaseActivity {
         if(processes!=null&&processes.size()!=0){
         for(AndroidAppProcess process:processes){
             if(process.pid==pid){
+
                 proInfo=new ProcessInfo();
                 Stat stat=process.stat();
 
@@ -193,5 +230,8 @@ public class ProcessDetailActivity extends BaseActivity {
         tvServiceCount=(TextView)findViewById(R.id.detail_service_count);
         tvMemSize=(TextView)findViewById(R.id.detail_process_size);
         tvTimer=(TextView)findViewById(R.id.detail_process_timer);
+        lv=(ListView)findViewById(R.id.detail_service_lv);
+        tvServiceTag=(TextView)findViewById(R.id.detail_service_tag);
+
     }
 }

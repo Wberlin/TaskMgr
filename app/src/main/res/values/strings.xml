@@ -11,4 +11,5 @@
 
     <string name="avaibleMem">系统可用内存为：</string>
     <string name="allMem">系统所有内存为：</string>
+    
 </resources>

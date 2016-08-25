@@ -7,9 +7,11 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +39,8 @@ import com.wbl.taskmanager.utils.AssociateProcessToService;
 import com.wbl.taskmanager.utils.BitmapUtil;
 import com.wbl.taskmanager.utils.CalculateProcessMemorySize;
 import com.wbl.taskmanager.utils.SystemUtil;
+import com.wbl.taskmanager.utils.aysntask.onFinishListener;
+import com.wbl.taskmanager.view.RoundProgressBarWidthNumber;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -67,11 +71,10 @@ public class ProcessUpActivity extends BaseActivity{
     private ActivityManager am;
     private CalculateProcessMemorySize myAysTask;//计算进程所占内存大小的异步类
     private AssociateProcessToService aeAysTask;//关联进程与服务器
+    private ProcessAysnTask proAysTask;//获取所有进程信息
     //实时显示可用内存信息
     private Timer mTimer;
-
-    //可侧滑布局
-    private SwipeLayout mSwipeLayout;
+    private RoundProgressBarWidthNumber mProgressBar;
 
     private Handler mHandler=new Handler(){
         @Override
@@ -102,61 +105,87 @@ public class ProcessUpActivity extends BaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_process);
+        initView();
+        initData();
+        initListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mTimer!=null){
+            mTimer.cancel();
+            mTimer=null;
+        }
+
+    }
+
+
+    private void initView() {
         tvTotal=(TextView)findViewById(R.id.process_total);
         tvTotalMem=(TextView)findViewById(R.id.process_tv_total_size);
         tvAvaibleMem=(TextView)findViewById(R.id.process_tv_avaible_size);
         gv=(GridView)findViewById(R.id.process_gv);
-        //gv2=(GridView)findViewById(R.id.process_gv_service);
-        //mSwipeLayout=(SwipeLayout)findViewById(R.id.process_swipe);
+        mProgressBar=(RoundProgressBarWidthNumber)findViewById(R.id.process_progessbar);
 
-
-
+    }
+    private void initData() {
         pm=getPackageManager();
         am=(ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        try {
-            getRunningAppInfo();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        adapter=new GridViewAdapter(this,processInfos);
-        adapter.setMode(Attributes.Mode.Multiple);
-        gv.setAdapter(adapter);
-
-        //adapter2=new GridView2Adapter(this,serviceInfos);
-        //adapter2.setMode(Attributes.Mode.Multiple);
-        //gv2.setAdapter(adapter2);
-
-
-
-        myAysTask=new CalculateProcessMemorySize(this);
-        myAysTask.execute(processInfos);
-        myAysTask.setAsynTaskFinishedListener(new CalculateProcessMemorySize.AsynTaskFinishedListener() {
+        mTimer=new Timer();
+        proAysTask=new ProcessAysnTask();
+        proAysTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        proAysTask.setOnFinishLisener(new onFinishListener() {
             @Override
-            public void refreshUI() {
-                mHandler.sendEmptyMessage(1);
+            public void onFinish(boolean isfinish) {
+
+                if(!isfinish){
+                    mProgressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if(processInfos!=null){
+                    tvTotal.setText("当前系统进程共有："+processInfos.size());
+                    gv.setVisibility(View.VISIBLE);
+                    adapter=new GridViewAdapter(ProcessUpActivity.this,processInfos);
+                    adapter.setMode(Attributes.Mode.Multiple);
+                    gv.setAdapter(adapter);
+                    myAysTask=new CalculateProcessMemorySize(ProcessUpActivity.this);
+                    myAysTask.execute(processInfos);
+                    myAysTask.setOnFinishedListener(new onFinishListener() {
+                        @Override
+                        public void onFinish(boolean isfinish) {
+                            mHandler.sendEmptyMessage(1);
+                        }
+                    });
+
+                    aeAysTask=new AssociateProcessToService(processInfos,serviceInfos);
+                    aeAysTask.execute();
+                    aeAysTask.setOnFinishedListener(new onFinishListener() {
+                        @Override
+                        public void onFinish(boolean isfinish) {
+                            mHandler.sendEmptyMessage(2);
+                        }
+                    });
+                    if(mTimer!=null){
+                        mTimer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                mHandler.sendEmptyMessage(3);
+                            }
+                        },0,1000);
+                    }
+
+                }
             }
         });
 
-        aeAysTask=new AssociateProcessToService(processInfos,serviceInfos);
-        aeAysTask.execute();
-        aeAysTask.setAssociateFinishedListener(new AssociateProcessToService.AssociateFinishedListener() {
-            @Override
-            public void refreshUI() {
-                mHandler.sendEmptyMessage(2);
-            }
-        });
 
-        tvTotal.setText("当前系统进程共有："+processInfos.size());
+
+
         tvAvaibleMem.setText(SystemUtil.getSystemAvaiableMemorySize(this));
         tvTotalMem.setText(SystemUtil.getSystemAllMemorySize(this));
-
-
-        initListener();
-
-
-
     }
     //初始化监听器
     private void initListener() {
@@ -178,40 +207,34 @@ public class ProcessUpActivity extends BaseActivity{
             }
         });
 
-
-
-
     }
 
     @Override
     protected void onStart() {
-        mTimer=new Timer();
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mHandler.sendEmptyMessage(0);
-            }
-        },0,5000);
+        try{
+            mTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    mHandler.sendEmptyMessage(0);
+                }
+            },0,5000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mHandler.sendEmptyMessage(3);
-            }
-        },0,1000);
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        if(mTimer!=null)
-            mTimer.cancel();
+
         super.onStop();
     }
 
     private void getRunningAppInfo() throws IOException{
         List<ActivityManager.RunningServiceInfo> serviceInfoList=am.getRunningServices(200);
-        for(ActivityManager.RunningServiceInfo sInfo:serviceInfoList){
+        for(int i=0;i<serviceInfoList.size();i++){
+            ActivityManager.RunningServiceInfo sInfo=serviceInfoList.get(i);
             ServiceInfo serviceInfo=new ServiceInfo();
             serviceInfo.setActivesince(sInfo.activeSince);
             serviceInfo.setStart(sInfo.started);
@@ -222,27 +245,22 @@ public class ProcessUpActivity extends BaseActivity{
             serviceInfo.setLastactivitytime(sInfo.lastActivityTime);
             serviceInfos.add(serviceInfo);
         }
+
         processes= AndroidProcesses.getRunningAppProcesses();
+
         if(processes!=null&&processes.size()!=0){
-            for(AndroidAppProcess process:processes){
+            for(int i=0;i<processes.size();i++){
+                AndroidAppProcess process=processes.get(i);
                 ProcessInfo proInfo=new ProcessInfo();
                 Stat stat=process.stat();
-
-                Statm statm=process.statm();
                 PackageInfo packageInfo=null;
-
                 try {
                     packageInfo=process.getPackageInfo(this,0);
                 }catch (PackageManager.NameNotFoundException e){
                     e.printStackTrace();
                 }
-
-
-
                 proInfo.setProcessName(process.name);
                 proInfo.setPid(stat.getPid());
-                SimpleDateFormat sf=new SimpleDateFormat("###:00", Locale.CHINA);
-                proInfo.setTime(sf.format(stat.stime()));
                 if(packageInfo!=null){
                     List<AppInfo> appInfoList=new ArrayList<>();
                     AppInfo appInfo=new AppInfo();
@@ -255,13 +273,98 @@ public class ProcessUpActivity extends BaseActivity{
 
                     appInfo.setAppIcon(BitmapUtil.drawableToBitmap(icon));
                     appInfo.setPkgName(packageInfo.packageName);
-                    appInfo.setTime(sf.format(stat.stime()));
                     appInfoList.add(appInfo);
                     proInfo.setAppInfoList(appInfoList);
                 }
                 processInfos.add(proInfo);
+               // proAysTask.setProgress((int)((i*1.0f/processes.size()*48)+55));
             }
+
         }
 
     }
+
+
+    public class ProcessAysnTask extends AsyncTask<Void,Integer,Boolean>{
+        private int progress=-1;
+        private long starttime;
+        private boolean isStart;
+        onFinishListener listener;
+
+        private void setOnFinishLisener(onFinishListener lisener){
+            this.listener=lisener;
+        }
+        public ProcessAysnTask() {
+            super();
+        }
+        @Override
+        protected void onPreExecute() {
+           progress=0;
+            isStart=true;
+           starttime=SystemClock.currentThreadTimeMillis();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            setProgress(0);
+            try {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(isStart){
+                            if(proAysTask.getProgress()<=100){
+                                try {
+                                    Thread.sleep(11);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                proAysTask.setProgress(proAysTask.getProgress()+1);
+
+                                //Log.e("TAG","process:"+proAysTask.getProgress());
+                            }
+                        }
+                    }
+                }).start();
+                getRunningAppInfo();
+
+            } catch (IOException e){
+                e.printStackTrace();
+                setProgress((int)((SystemClock.currentThreadTimeMillis()-starttime)/1200*100));
+                isStart=false;
+                return false;
+            }
+
+            isStart=false;
+            return true;
+        }
+
+
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            mProgressBar.setProgress(values[0]);
+            if(values[0]>=100){
+                mProgressBar.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            /////////////////////
+            if(listener!=null)
+            listener.onFinish(aBoolean);
+
+        }
+
+
+        private void setProgress(int progress){
+            this.progress=progress;
+            publishProgress(this.progress);
+        }
+        private int getProgress(){
+            return progress;
+        }
+    }
+
+
 }
