@@ -41,7 +41,7 @@ public class CrashService extends Service {
     public void onCreate() {
         super.onCreate();
         timer=new Timer();
-        timer.schedule(new CrashTask(),0,20*1000);
+        timer.schedule(new CrashTask(),0,12*60*60*1000);
         Log.e("TAG","CrashService->onCreate()");
     }
 

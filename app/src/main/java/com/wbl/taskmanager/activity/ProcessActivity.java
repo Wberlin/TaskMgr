@@ -208,7 +208,7 @@ public class ProcessActivity extends BaseActivity {
                 String appName=packageInfo.applicationInfo.loadLabel(mPackageManager).toString();
                 appInfo.setAppLabel(appName);
                 appInfo.setPkgName(appProcessInfo.processName);
-                appInfo.setAppIcon(BitmapUtil.drawableToBitmap(icon));
+                appInfo.setAppIcon(icon);
 
 
                 //appInfo.setTime(df.format(SystemClock.elapsedRealtime()));

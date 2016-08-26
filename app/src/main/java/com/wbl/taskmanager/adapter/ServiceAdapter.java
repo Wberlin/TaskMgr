@@ -2,6 +2,7 @@ package com.wbl.taskmanager.adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -37,9 +38,10 @@ public class ServiceAdapter extends BaseListViewAdapter<ServiceInfo> {
             vHolder=(ViewHolder) convertView.getTag();
         }
 
-        ServiceInfo serviceInfo=mList.get(position);
-        vHolder.tvName.setText(serviceInfo.getServicename().substring(serviceInfo.getServicename().lastIndexOf(".")+1
-                ,serviceInfo.getServicename().length()));
+        final ServiceInfo serviceInfo=mList.get(position);
+        vHolder.tvName.setText(serviceInfo.getServicename().substring(
+                serviceInfo.getServicename().lastIndexOf(".")+1,
+                serviceInfo.getServicename().length()));
         String time= DateUtils.formatElapsedTime(new StringBuilder(128),
                 (SystemClock.elapsedRealtime()-serviceInfo.getActivesince())/1000);
         vHolder.tvTime.setText(time);
@@ -52,10 +54,30 @@ public class ServiceAdapter extends BaseListViewAdapter<ServiceInfo> {
                 AlertDialog dialog=new AlertDialog.Builder(mActivity)
                         .setTitle("停止系统服务?")
                         .setMessage("如果您停止该服务，设备的部分功能可能停止正常运作直至您关机然后再次开机")
-                        .setPositiveButton("确定",null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                try{
+                                    if(serviceInfo.getServiceIntent()!=null){
+                                        boolean isSuccess=mActivity.stopService(serviceInfo.getServiceIntent());
+                                        if(isSuccess){
+                                            mList.remove(serviceInfo);
+                                            notifyDataSetChanged();
+                                        }
+
+                                    }
+
+                                }catch (SecurityException e){
+                                    e.printStackTrace();
+                                    new AlertDialog.Builder(mActivity).setTitle("权限不够")
+                                            .setMessage("对不起，您的权限不够,无法停止Service")
+                                            .create().show();
+                                }
+
+                            }
+                        })
                         .setNegativeButton("取消",null).create();
                 dialog.show();
-
 
             }
         });

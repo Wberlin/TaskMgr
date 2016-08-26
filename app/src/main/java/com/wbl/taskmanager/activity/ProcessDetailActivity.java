@@ -122,24 +122,25 @@ public class ProcessDetailActivity extends BaseActivity {
 
     private void initDate() throws IOException {
         getRunningProcessInfo();
-        myAsynTask=new CalculateProcessMemorySize(this);
-        List<ProcessInfo> processInfos=new ArrayList<>();
-        processInfos.add(proInfo);
-        myAsynTask.execute(processInfos);
-        myAsynTask.setOnFinishedListener(new onFinishListener() {
-            @Override
-            public void onFinish(boolean isfinish) {
-                mHandler.sendEmptyMessage(0);
+
+        if(proInfo!=null){
+            myAsynTask=new CalculateProcessMemorySize(this);
+            List<ProcessInfo> processInfos=new ArrayList<>();
+            processInfos.add(proInfo);
+            myAsynTask.execute(processInfos);
+            myAsynTask.setOnFinishedListener(new onFinishListener() {
+                @Override
+                public void onFinish(boolean isfinish) {
+                    mHandler.sendEmptyMessage(0);
+                }
+            });
+            if(proInfo.getAppInfoList().size()!=0){
+                tvAppIcon.setImageDrawable(proInfo.getAppInfoList().get(0).getAppIcon());
+                tvAppName.setText(proInfo.getAppInfoList().get(0).getAppLabel());
             }
-        });
-        if(proInfo.getAppInfoList().size()!=0){
-            tvAppIcon.setImageBitmap(proInfo.getAppInfoList().get(0).getAppIcon());
-            tvAppName.setText(proInfo.getAppInfoList().get(0).getAppLabel());
+            tvServiceCount.setText("共有"+serviceInfos.size()+"个服务");
+            tvMemSize.setText(proInfo.getMemSize());
         }
-        tvServiceCount.setText("共有"+serviceInfos.size()+"个服务");
-        tvMemSize.setText(proInfo.getMemSize());
-
-
         if(serviceInfos.size()!=0){
 
             mAdapter=new ServiceAdapter(this);
@@ -166,8 +167,9 @@ public class ProcessDetailActivity extends BaseActivity {
                 serviceInfo.setServicemessage(sInfo.service);
                 serviceInfo.setServicename(sInfo.service.getClassName());
                 serviceInfo.setLastactivitytime(sInfo.lastActivityTime);
-
-                sInfo.service.getPackageName();
+                Intent intent=new Intent(ProcessDetailActivity.this,sInfo.service.getShortClassName().getClass());
+                intent.setComponent(sInfo.service);
+                serviceInfo.setServiceIntent(intent);
                 try {
                     PackageManager pm=getPackageManager();
                     PackageInfo packageInfo=pm.getPackageInfo(sInfo.service.getPackageName(),0);
@@ -209,7 +211,7 @@ public class ProcessDetailActivity extends BaseActivity {
 
                     //获取应用图标
                     Drawable icon=packageInfo.applicationInfo.loadIcon(pm);
-                    appInfo.setAppIcon(BitmapUtil.drawableToBitmap(icon));
+                    appInfo.setAppIcon(icon);
                     appInfo.setPkgName(packageInfo.packageName);
                    // appInfo.setTime(sf.format(stat.stime()));
                     appInfoList.add(appInfo);

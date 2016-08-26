@@ -7,8 +7,11 @@ import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.models.ServiceInfo;
 import com.wbl.taskmanager.utils.aysntask.onFinishListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -44,6 +47,14 @@ public class AssociateProcessToService extends AsyncTask<Void,Integer,Boolean> {
         }
 
         return true;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm;ss", Locale.CHINA);
+
+        Log.e("TAG","AssociateProcess->execute finish at:"+df.format(new Date()));
     }
 
     @Override

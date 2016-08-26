@@ -2,8 +2,11 @@ package com.wbl.taskmanager.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.anthonycr.grant.PermissionsManager;
+import com.wbl.taskmanager.utils.SystemUtil;
 
 import java.util.Stack;
 
@@ -17,10 +20,19 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        String processName=SystemUtil.getProcessName();
 
-       CrashHandler mCrashHandler = CrashHandler.getInstance();
-       mCrashHandler.init(getApplicationContext());
-       singleton=this;
+        //Log.e("TAG","当前正在运行中进程的名字："+processName);
+        if(!TextUtils.isEmpty(processName)&&processName.equals(this.getPackageName())){
+            CrashHandler mCrashHandler = CrashHandler.getInstance();
+            mCrashHandler.init(getApplicationContext());
+            singleton=this;
+            //this.getPackageName()获取到的永远是主进程的包名.
+        }else{
+            //Log.e("TAG","current packageName:"+this.getPackageName());
+           //Log.e("TAG","获取的processname:"+processName);
+        }
+
 
 
     }

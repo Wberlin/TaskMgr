@@ -11,4 +11,5 @@
 
 
     <dimen name="text_size_24">24dp</dimen>
+    <dimen name="text_size_20">20dp</dimen>
 </resources>

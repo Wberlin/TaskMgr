@@ -1,6 +1,7 @@
 package com.wbl.taskmanager.models;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -104,7 +105,6 @@ public class ServiceInfo{
 //            return new ServiceInfo[i];
 //        }
 //    };
-
     private String servicename; //Service Name
     private int pid; //所在进程
     private String processname; //进程名
@@ -112,10 +112,16 @@ public class ServiceInfo{
     private long activesince;//Service初次启动的时间
     private ComponentName servicemessage;//获得该Service的组件信息 包含了pkgname / servicename信息
     private long lastactivitytime;//Activity最近一次关联Service时间
-
-
-
     private Drawable packageIcon;//service所属包的图标
+    private Intent serviceIntent;
+    public Intent getServiceIntent() {
+        return serviceIntent;
+    }
+
+    public void setServiceIntent(Intent serviceIntent) {
+        this.serviceIntent = serviceIntent;
+    }
+
     public Drawable getPackageIcon() {
         return packageIcon;
     }

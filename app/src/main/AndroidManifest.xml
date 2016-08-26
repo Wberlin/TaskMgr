@@ -25,6 +25,11 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.ProcessUpActivity"
             android:screenOrientation="portrait"/>
+
+        <service android:name=".services.CrashService"
+                 android:process=":crash"
+            />
+
     </application>
 
 </manifest>

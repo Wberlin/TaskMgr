@@ -7,11 +7,15 @@ import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.Formatter;
+import android.util.Log;
 
 import com.wbl.taskmanager.models.ProcessInfo;
 import com.wbl.taskmanager.utils.aysntask.onFinishListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by djtao on 2016/8/22.
@@ -51,7 +55,14 @@ public class CalculateProcessMemorySize extends AsyncTask<List<ProcessInfo>,Inte
 
         }
 
-        //进度条更新
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm;ss", Locale.CHINA);
+        Log.e("TAG","Calculateprocess->execute finish at:"+df.format(new Date()));
+    }
+
+    //进度条更新
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
@@ -68,6 +79,7 @@ public class CalculateProcessMemorySize extends AsyncTask<List<ProcessInfo>,Inte
                     listener.onFinish(aBoolean);
                 }
             }
+
         }
 
 }

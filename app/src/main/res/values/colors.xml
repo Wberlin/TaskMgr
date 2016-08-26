@@ -7,4 +7,6 @@
 
     <color name="backgroundColor">#FFFFFF</color>
     <color name="backgroundColorPress">#DBDBD3</color>
+
+    <color name="white">#ffffff</color>
 </resources>

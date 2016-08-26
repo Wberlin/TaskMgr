@@ -56,7 +56,7 @@ public class GridViewAdapter extends BaseSwipeAdapter {
         tvProName.setText("进程名："+processInfoList.get(position).getProcessName());
         if(appInfoList!=null&&appInfoList.size()!=0){
             tvAppName.setText(appInfoList.get(0).getAppLabel());
-            ivAppIcon.setImageBitmap(appInfoList.get(0).getAppIcon());
+            ivAppIcon.setImageDrawable(appInfoList.get(0).getAppIcon());
         }
         long activeSince=0;
 

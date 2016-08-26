@@ -31,11 +31,11 @@ public class AppInfo{
     public void setPkgName(String pkgName) {
         this.pkgName = pkgName;
     }
-    public Bitmap getAppIcon() {
+    public Drawable getAppIcon() {
         return appIcon;
     }
 
-    public void setAppIcon(Bitmap appIcon) {
+    public void setAppIcon(Drawable appIcon) {
         this.appIcon = appIcon;
     }
 
@@ -71,7 +71,7 @@ public class AppInfo{
 //    }
 
     private String appLabel;//应用程序标签
-    private Bitmap appIcon;//应用程序图像
+    private Drawable appIcon;//应用程序图像
     private Intent intent;//启动应用程序的Intent
     private String pkgName;//应用程序所对应的包名
     //当前应用运行时间
